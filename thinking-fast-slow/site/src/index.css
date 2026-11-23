@@ -1,0 +1,306 @@
+:root {
+  --t: 0;
+  --cx: 80%;
+  --cy: 70%;
+  --night: #0a1715;
+  --paper: #f2e8d2;
+  --paper-2: #e4d7ba;
+  --ink: #1b2a27;
+  --ink-soft: #51605a;
+  --brass: #dcae5c;
+  --brass-deep: #a67a30;
+  --red: #e4502c;
+  --teal: #16454a;
+  --cream: #f6eedb;
+  --sans: 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --serif: 'Fraunces Variable', 'Noto Serif SC', 'Songti SC', serif;
+  --out: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --spring: cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+* { box-sizing: border-box; margin: 0; }
+html, body, #root { height: 100%; }
+body { background: var(--night); color: var(--ink); font-family: var(--serif); font-optical-sizing: auto; overflow: hidden; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+/* 断行：中文按严格的标点禁则；短的标题和字幕让各行长度均衡，成段的文字不留孤行 */
+body { line-break: strict; overflow-wrap: break-word; }
+h1, .caption, .introline p, .verdict, .hintpill span, .end-h, .q, .tag3d, .slow-hint { text-wrap: balance; }
+p, .stat, .endnote { text-wrap: pretty; }
+/* 分句块：放得下就不拆，换行发生在块和块之间 */
+.keep { display: inline-block; max-width: 100%; white-space: pre-wrap; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 3px; }
+/* 翻开以后，兔子就是光标：三维画面上不再显示箭头，界面上照常显示 */
+@media (pointer: fine) { html.opened .world, html.opened .world canvas { cursor: none !important; } }
+
+.stage { position: fixed; inset: 0; }
+.world { position: fixed !important; inset: 0; z-index: 1; }
+/* 慢醒过来的时候，颜色从它身上一圈圈褪掉：颜色是感觉，黑白是算过的 */
+.cold { position: fixed; inset: 0; z-index: 3; pointer-events: none; -webkit-backdrop-filter: saturate(0.04) brightness(1.1) contrast(1.04); backdrop-filter: saturate(0.04) brightness(1.1) contrast(1.04); clip-path: circle(calc(var(--t) * 150vmax) at var(--cx) var(--cy)); }
+
+/* —— 纸片：所有浅色的界面都是一张压在桌上的卡纸 —— */
+.card { position: relative; background: var(--paper) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42  0 0 0 0 0.34  0 0 0 0 0.22  0 0 0 0.16 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>"); color: var(--ink); border-radius: 5px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset, 0 22px 44px rgba(0, 0, 0, 0.42), 0 3px 8px rgba(0, 0, 0, 0.3); }
+
+/* —— 页眉：像书页顶上的那一行 —— */
+.top { position: absolute; top: 0; left: 0; right: 0; z-index: 6; height: 64px; padding: 0 clamp(18px, 3.2vw, 44px); display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; color: var(--cream); pointer-events: none; }
+.top > * { pointer-events: auto; }
+.head { grid-column: 2; display: flex; align-items: baseline; gap: 12px; font-size: 15px; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55); white-space: nowrap; }
+.head .brand { font-style: italic; font-weight: 600; font-size: 17px; letter-spacing: 0.005em; }
+.head .rule { align-self: center; width: 26px; height: 1px; background: rgba(246, 238, 219, 0.45); }
+.head .book { font-weight: 400; color: rgba(246, 238, 219, 0.78); }
+.tools { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 16px; }
+.dots { display: flex; gap: 5px; align-items: center; padding-right: 4px; }
+.dots i { width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid rgba(246, 238, 219, 0.55); transition: background 0.4s, border-color 0.4s, scale 0.5s var(--spring); }
+.dots i.on { background: var(--brass); border-color: var(--brass); scale: 1.15; box-shadow: 0 0 10px rgba(220, 174, 92, 0.7); }
+.langsw { display: flex; align-items: baseline; gap: 7px; font-family: var(--sans); font-size: 13px; font-weight: 700; padding: 8px 2px; text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5); }
+.langsw span { color: rgba(246, 238, 219, 0.45); transition: color 0.25s; position: relative; }
+.langsw span.on { color: var(--cream); }
+.langsw span.on::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1.5px; background: var(--brass); }
+.langsw:hover span:not(.on) { color: rgba(246, 238, 219, 0.8); }
+.snd { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; transition: background 0.2s; }
+.snd:hover { background: rgba(246, 238, 219, 0.12); }
+.snd svg { width: 21px; height: 21px; fill: none; stroke: var(--cream); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 1px 5px rgba(0, 0, 0, 0.5)); }
+.snd .spk { fill: var(--cream); }
+.snd .w1, .snd .w2 { opacity: 0; transform-origin: 12px 12px; scale: 0.6; transition: opacity 0.25s, scale 0.3s var(--spring); }
+.snd .w2 { transition-delay: 0.06s; }
+.snd.on .w1, .snd.on .w2 { opacity: 1; scale: 1; }
+.snd .x { opacity: 1; transition: opacity 0.2s; }
+.snd.on .x { opacity: 0; }
+
+/* —— 开场：合着的书下面那一行提示 —— */
+.bookhint { position: absolute; left: 50%; bottom: 6.5vh; z-index: 6; transform: translateX(-50%); width: max-content; max-width: 86vw; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--cream); font-size: 16px; font-weight: 500; letter-spacing: 0.02em; text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7); }
+.bookhint i { order: 2; width: 1px; height: 34px; background: linear-gradient(var(--brass), rgba(220, 174, 92, 0)); transform-origin: top; animation: drip 1.9s var(--out) infinite; }
+@keyframes drip { 0% { scale: 1 0; opacity: 0; } 30% { opacity: 1; } 70% { scale: 1 1; opacity: 1; } 100% { scale: 1 1; opacity: 0; } }
+
+/* 指到岛上的东西时，头顶冒出来的小纸签 */
+.selbox { position: fixed; left: 0; top: 0; z-index: 8; pointer-events: none; opacity: 0; transition: opacity 0.15s; }
+.selbox i { display: none; }
+.sellabel { position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, -6px); white-space: nowrap; padding: 5px 12px 6px; border-radius: 3px; background: var(--paper); color: var(--ink); font-size: 14px; font-weight: 600; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3); animation: tagin 0.3s var(--spring) both; }
+.sellabel::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 12px; background: rgba(246, 238, 219, 0.75); }
+@keyframes tagin { from { opacity: 0; scale: 0.7; } }
+
+.toolbar { position: fixed; left: 0; top: 0; z-index: 9; display: flex; align-items: center; gap: 2px; padding: 5px; white-space: nowrap; animation: tb 0.3s var(--out) both; }
+@keyframes tb { from { opacity: 0; margin-top: 8px; } }
+.toolbar button { padding: 8px 14px; border-radius: 3px; font-size: 15px; font-weight: 500; transition: background 0.12s, color 0.12s, opacity 0.2s; }
+.toolbar button:hover:not(:disabled) { background: rgba(27, 42, 39, 0.08); }
+.toolbar button:disabled { opacity: 0.32; }
+.toolbar button.picked { opacity: 1; background: rgba(228, 80, 44, 0.14); color: #a8341a; font-weight: 700; }
+.fixedbar { left: 50%; top: auto; bottom: 13vh; transform: translateX(-50%); }
+
+/* 书页下方的一张小纸条：现在该做什么 */
+.hintpill { position: absolute; left: 50%; bottom: 4.6vh; z-index: 6; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; padding: 11px 12px 12px 20px; font-size: 15.5px; font-weight: 500; white-space: nowrap; animation: slipin 0.7s var(--out) both; }
+@keyframes slipin { from { opacity: 0; translate: 0 16px; } }
+.hintpill span { padding: 1px 8px 1px 0; }
+.hintpill span:only-child { padding-right: 8px; }
+.hintpill .turn { display: none; margin-top: 3px; font-style: normal; font-size: 13px; color: var(--ink-soft); }
+@media (max-width: 760px) and (orientation: portrait) { .hintpill .turn { display: block; } }
+.btn { padding: 7px 15px 8px; border-radius: 3px; background: var(--ink); color: var(--cream); font-size: 14px; font-weight: 600; transition: background 0.2s, translate 0.2s; }
+.btn:hover { background: #2b423d; translate: 0 -1px; }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: 0 0 0 1px rgba(27, 42, 39, 0.3) inset; }
+.btn.ghost:hover { background: rgba(27, 42, 39, 0.07); }
+
+/* 开场白：像电影字幕一样压在桌面上 */
+.introline { position: absolute; left: 50%; bottom: 4.2vh; z-index: 6; transform: translateX(-50%); width: min(92vw, 900px); text-align: center; color: var(--cream); pointer-events: none; transition: opacity 0.4s, translate 0.5s var(--out); animation: cap 0.9s var(--out) 0.3s both; }
+.introline.off { opacity: 0; translate: 0 10px; }
+.introline h1 { font-size: clamp(26px, min(3.2vw, 5.6vh), 46px); font-weight: 900; line-height: 1.2; letter-spacing: 0.01em; text-shadow: 0 2px 14px rgba(4, 16, 18, 0.9), 0 0 34px rgba(4, 16, 18, 0.7); }
+.introline p { margin-top: 10px; font-size: clamp(15px, 1.4vw, 20px); font-weight: 500; color: rgba(246, 238, 219, 0.82); text-shadow: 0 1px 10px rgba(4, 16, 18, 0.9); }
+html[data-lang='en'] .introline h1 { font-weight: 700; letter-spacing: -0.012em; }
+
+/* 开场介绍里出的题：一张大纸卡，后面一道等着填的横线 */
+.prompt { position: absolute; left: clamp(22px, 9vw, 150px); top: 19vh; z-index: 6; display: flex; align-items: baseline; gap: 0.35em; padding: 0.42em 0.7em 0.5em; font-size: clamp(30px, min(4.4vw, 7.5vh), 66px); font-weight: 900; letter-spacing: 0.02em; white-space: nowrap; rotate: -2deg; animation: prompt 0.5s var(--spring) both; }
+.prompt.right { left: auto; right: clamp(22px, 7vw, 120px); top: 13vh; rotate: 1.6deg; font-variant-numeric: tabular-nums; }
+/* 介绍里兔子抢答的气泡大一号 */
+.introing .fast-say { font-size: clamp(20px, 2.1vw, 30px); padding: 8px 16px 10px; }
+.prompt i { width: 2.3em; height: 0.09em; background: rgba(27, 42, 39, 0.38); translate: 0 0.08em; }
+@keyframes prompt { from { opacity: 0; scale: 0.82; translate: 0 14px; } }
+.skip { position: absolute; left: clamp(18px, 3.2vw, 44px); top: 14px; z-index: 7; padding: 9px 4px; color: rgba(246, 238, 219, 0.72); font-size: 14.5px; font-weight: 500; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6); transition: color 0.2s; }
+.skip:hover { color: var(--cream); }
+/* 介绍期间兔子不跟鼠标，所以把箭头还给访客 */
+@media (pointer: fine) { html.opened.introing .world, html.opened.introing .world canvas { cursor: default !important; } }
+
+/* 题目卡 */
+.qcard { position: absolute; left: clamp(18px, 3.2vw, 44px); top: 96px; z-index: 6; width: min(40vw, 520px); padding: 26px 30px 24px; }
+.q { font-weight: 900; letter-spacing: -0.005em; line-height: 1.24; }
+.ln { display: block; }
+.size-xl .q { font-size: clamp(28px, min(3.3vw, 6.2vh), 52px); }
+.size-l .q { font-size: clamp(21px, min(2.2vw, 4.2vh), 34px); }
+.size-m .q { font-size: clamp(15.5px, min(1.32vw, 2.5vh), 20px); font-weight: 600; line-height: 1.7; letter-spacing: 0; }
+.cue { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(27, 42, 39, 0.16); font-size: 14.5px; font-weight: 500; color: var(--ink-soft); }
+.cue:empty { display: none; }
+.mlines { display: block; width: min(250px, 58%); margin: 14px 0 2px; overflow: visible; }
+.mlines path { fill: none; stroke: var(--ink); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.15s; }
+.mlines path.on { stroke: var(--red); }
+.mlines .guides path { stroke-width: 2; stroke-dasharray: 1; stroke-dashoffset: var(--draw, 1); }
+
+/* 慢的笔记本：一页横线纸，左边一道红色页边线。文字的行高等于横线的间距，所以每一行字都压在线上。
+   按住时顶边的细条是进度，乌龟一行行写；写完后概念名升到页眉，下面是结论和说明。 */
+.panel { --r: 28px; position: absolute; left: clamp(18px, 3.2vw, 44px); bottom: 4.6vh; z-index: 7; width: min(456px, 92vw); padding: calc(var(--r) * 0.5) 28px calc(var(--r) * 0.5) 54px; border-radius: 3px; color: var(--ink); overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent 38px, rgba(217, 80, 47, 0.42) 38px, rgba(217, 80, 47, 0.42) 39px, transparent 39px),
+    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--r) - 1px), rgba(38, 76, 92, 0.17) calc(var(--r) - 1px), rgba(38, 76, 92, 0.17) var(--r)),
+    var(--paper) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.42  0 0 0 0 0.34  0 0 0 0 0.22  0 0 0 0.16 0'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>");
+  background-position: 0 0, 0 calc(var(--r) * 0.5 - 7px), 0 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.55) inset, 0 26px 54px rgba(0, 0, 0, 0.5), 0 3px 8px rgba(0, 0, 0, 0.3);
+  opacity: 0; transform: translateY(18px) rotate(-0.6deg); pointer-events: none; transition: opacity 0.35s, transform 0.5s var(--out); }
+.panel.on { opacity: 1; transform: rotate(-0.6deg); pointer-events: auto; }
+.note-prog { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--teal); transform-origin: left; }
+.note-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; height: var(--r); line-height: var(--r); font-size: 13.5px; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
+.note-title.named { color: var(--teal); font-size: 15px; font-weight: 900; letter-spacing: 0.02em; animation: named 0.5s var(--out) both; }
+@keyframes named { from { opacity: 0; translate: -8px 0; } }
+.note-num { font-variant-numeric: tabular-nums; font-weight: 500; letter-spacing: 0.04em; }
+.work { position: relative; font-size: 15.5px; line-height: var(--r); }
+/* 整句一开始就排好：还没写到的字透明占位，光标不占宽度，所以写的过程中断行不动 */
+.work p { text-wrap: pretty; }
+.work .rest { opacity: 0; }
+.work .caret { display: inline-block; width: 0; height: 1em; vertical-align: -0.12em; position: relative; }
+.work .caret::after { content: ''; position: absolute; left: 2px; bottom: 0.1em; width: 0.5em; height: 2px; background: var(--red); animation: caret 1s steps(2) infinite; }
+@keyframes caret { 50% { opacity: 0; } }
+.is-done .work > div { display: none; }
+.is-done .work { min-height: 0; height: 0; }
+.venn { width: 96px; flex: none; overflow: visible; position: absolute; right: -6px; top: 4px; }
+/* 有示意图的那一页：写的时候字给图让出右边；写完图缩小，停在结论那一行的右端 */
+.panel:has(.venn) .work > div { padding-right: 104px; }
+.is-done .venn { width: 62px; top: 5px; right: -6px; }
+.is-done .venn text { display: none; }
+.venn circle { fill: none; stroke: var(--teal); stroke-width: 2.2; stroke-dasharray: 1; stroke-dashoffset: var(--draw, 1); }
+.venn text { fill: var(--ink); font-family: var(--sans); font-size: 12px; text-anchor: middle; opacity: calc(1 - var(--draw, 1)); }
+.result { animation: rise 0.45s var(--out) both; }
+@keyframes rise { from { opacity: 0.25; transform: translateY(8px); } }
+.verdict { position: relative; top: 8px; font-weight: 900; font-size: 30px; line-height: calc(var(--r) * 2); letter-spacing: -0.005em; text-wrap: balance; }
+.panel:has(.venn) .verdict { padding-right: 70px; }
+.stat { font-size: 15.5px; line-height: var(--r); color: #2b3a36; text-wrap: pretty; }
+.note-foot { display: flex; align-items: center; justify-content: space-between; gap: 14px; height: calc(var(--r) * 2); margin-top: calc(var(--r) * 0.5); }
+.note-foot span { font-size: 13px; color: var(--ink-soft); }
+.next { padding: 8px 18px 9px; border-radius: 3px; background: var(--ink); color: var(--cream); font-size: 14.5px; font-weight: 600; transition: translate 0.2s, background 0.2s; }
+.next:hover { background: #2b423d; translate: 0 -1px; }
+
+/* 结尾：一张对开的卡。左边是结果和那两个条件，右边是书后的索引——九个概念，看过的写着名字 */
+.endcard { position: absolute; left: 50%; top: 50%; z-index: 8; transform: translate(-50%, -50%); width: min(92vw, 880px); max-height: 88vh; overflow: auto; display: grid; grid-template-columns: 1.3fr 1fr; gap: 44px; padding: 40px 44px 38px; }
+.end-h { font-size: clamp(24px, 2.5vw, 34px); font-weight: 900; line-height: 1.26; }
+.endnote { margin-top: 18px; font-size: 16px; line-height: 1.85; color: #33433f; text-wrap: pretty; }
+.endbtns { margin-top: 24px; display: flex; gap: 10px; }
+.end-index { list-style: none; padding: 0 0 0 40px; border-left: 1px solid rgba(27, 42, 39, 0.16); align-self: start; }
+.end-index li { display: flex; align-items: baseline; gap: 8px; font-size: 15.5px; line-height: 2.05; color: rgba(27, 42, 39, 0.36); }
+.end-index li.on { color: var(--ink); font-weight: 600; }
+.end-index li i { flex: 1; border-bottom: 1.5px dotted currentColor; opacity: 0.5; translate: 0 -0.28em; }
+.end-index li em { font-style: normal; font-variant-numeric: tabular-nums; font-size: 13.5px; }
+.end-index .end-index-h { justify-content: space-between; margin-bottom: 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(27, 42, 39, 0.3); font-size: 13.5px; font-weight: 600; color: var(--ink-soft); line-height: 1.8; }
+
+/* 三维场景里的小标签 */
+.flag { display: block; white-space: nowrap; padding: 3px 9px 4px; border-radius: 2px; background: rgba(15, 32, 30, 0.86); box-shadow: 0 0 0 1px rgba(220, 174, 92, 0.55) inset; color: var(--brass); font: 600 13px var(--serif); opacity: 0; scale: 0.6; transition: opacity 0.2s, scale 0.3s var(--spring); }
+.flag.show { opacity: 1; scale: 1; }
+.zzz3d { display: flex; align-items: flex-end; gap: 3px; color: var(--cream); font: italic 600 20px var(--serif); text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6); transition: opacity 0.2s; }
+.zzz3d span { animation: zz 3s ease-in-out infinite; }
+.zzz3d span:nth-child(2) { font-size: 26px; animation-delay: 0.5s; margin-bottom: 12px; }
+.zzz3d span:nth-child(3) { font-size: 34px; animation-delay: 1s; margin-bottom: 30px; }
+@keyframes zz { 0%, 100% { opacity: 0.25; transform: translateY(5px); } 50% { opacity: 1; transform: translateY(-5px); } }
+.slow-hint { white-space: nowrap; padding: 8px 14px 9px; border-radius: 12px 12px 2px 12px; background: var(--teal); box-shadow: 0 0 0 1px rgba(220, 174, 92, 0.4) inset, 0 10px 22px rgba(0, 0, 0, 0.4); color: var(--cream); font: 600 14.5px var(--serif); transform: translate(-100%, -100%); transition: opacity 0.3s; }
+.fast-say-wrap { position: fixed; left: 0; top: 0; z-index: 91; pointer-events: none; }
+.fast-say { position: absolute; left: 12px; bottom: 4px; white-space: nowrap; padding: 6px 13px 8px; border-radius: 14px 14px 14px 2px; background: var(--paper); color: #c23c1c; font-size: clamp(15px, 1.35vw, 19px); font-weight: 900; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4); transform-origin: 0 100%; transform: scale(0); }
+.tag3d { display: block; white-space: nowrap; padding: 4px 10px 5px; border-radius: 3px; background: var(--paper); color: var(--ink); font: 600 14px var(--serif); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.25); opacity: 0; scale: 0.6; transition: opacity 0.25s, scale 0.35s var(--spring); }
+.tag3d.show { opacity: 1; scale: 1; }
+.tag3d-fit { display: block; }
+.tag3d.big { font-size: 16px; }
+.tag3d.below { translate: 0 calc(100% + 5px); }
+.tg15, .tag3d[data-tg='15'] { font-size: 15px; }
+.tg16 { font-size: 16px; }
+.tg17 { font-size: 17px; }
+.tg22 { display: block; padding: 2px 4px; font-size: 22px; }
+.traits { width: 250px; }
+.tag3d.dark { background: #14302d; color: var(--cream); box-shadow: 0 0 0 1px rgba(220, 174, 92, 0.45) inset, 0 8px 18px rgba(0, 0, 0, 0.35); }
+.tag3d.red { background: var(--red); color: #fff; }
+.tag3d.blue { background: var(--teal); color: var(--cream); }
+
+.exit { position: absolute; left: clamp(18px, 3.2vw, 44px); top: 14px; z-index: 7; padding: 9px 4px; color: var(--cream); font-size: 15px; font-weight: 500; text-shadow: 0 1px 10px rgba(0, 0, 0, 0.6); display: flex; align-items: center; gap: 9px; }
+.exit::before { content: ''; width: 16px; height: 9px; background: currentColor; -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'><path d='M5 .8 1.2 4.5 5 8.2M1.5 4.5H15.5' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat; mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 9'><path d='M5 .8 1.2 4.5 5 8.2M1.5 4.5H15.5' fill='none' stroke='black' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat; transition: translate 0.25s var(--out); }
+.exit:hover::before { translate: -4px 0; }
+.st-case .qcard { top: 16vh; }
+/* 字幕：微观世界里只用这一行字，其余的都演出来 */
+.caption { position: absolute; left: 50%; bottom: 6.5vh; z-index: 6; transform: translateX(-50%); width: max-content; max-width: min(760px, 86vw); padding: 0 12px; text-align: center; font-size: clamp(18px, 1.75vw, 26px); font-weight: 900; line-height: 1.5; color: #fff8e8; text-shadow: 0 2px 10px rgba(4, 16, 18, 0.9), 0 0 26px rgba(4, 16, 18, 0.75), 0 0 2px rgba(4, 16, 18, 0.9); animation: cap 0.5s var(--out) both; pointer-events: none; }
+@keyframes cap { from { opacity: 0; translate: 0 8px; } }
+/* 左下角的笔记本出现时，字幕挪到它右边那块空处居中，不被它盖住 */
+@media (min-width: 1000px) { .panel-on .caption { left: calc(clamp(18px, 3.2vw, 44px) + 500px); right: 24px; transform: none; width: auto; max-width: none; transition: left 0.4s var(--out); } }
+@media (max-width: 999px) { .panel-on .caption { bottom: auto; top: 64px; } }
+
+/* 等待页 */
+.loader { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 18px; background: var(--night); color: var(--cream); transition: opacity 0.9s ease 0.1s; }
+.loader.done { opacity: 0; pointer-events: none; }
+.loader-t { font-size: 16px; font-style: italic; font-weight: 500; letter-spacing: 0.02em; color: rgba(246, 238, 219, 0.82); }
+.loader-bar { width: 148px; height: 1px; background: rgba(246, 238, 219, 0.18); overflow: hidden; }
+.loader-bar i { display: block; width: 40%; height: 100%; background: var(--brass); animation: load 1.3s ease-in-out infinite; }
+@keyframes load { from { translate: -100% 0; } to { translate: 250% 0; } }
+
+html[data-lang='en'] .q { letter-spacing: -0.015em; line-height: 1.14; font-weight: 800; }
+html[data-lang='en'] .size-m .q { letter-spacing: -0.005em; line-height: 1.55; }
+html[data-lang='en'] .caption { font-weight: 700; letter-spacing: -0.005em; }
+html[data-lang='en'] .verdict { font-weight: 800; font-size: 28px; }
+html[data-lang='en'] .end-h { font-weight: 800; letter-spacing: -0.012em; }
+
+@media (max-width: 760px) {
+  .top { grid-template-columns: auto 1fr; height: 54px; }
+  .head { grid-column: 1; font-size: 13.5px; gap: 8px; }
+  .head .brand { font-size: 15.5px; }
+  .head .book, .head .rule { display: none; }
+  .tools { grid-column: 2; gap: 10px; }
+  .dots i { width: 6px; height: 6px; }
+  .st-case .head, .st-intro .head { visibility: hidden; }
+  .exit { top: 9px; }
+  .qcard { top: 66px; width: calc(100vw - 36px); padding: 18px 20px 16px; }
+  .st-case .qcard { top: 66px; }
+  .panel { --r: 26px; bottom: 2vh; width: calc(100vw - 36px); padding-left: 46px; padding-right: 20px; background-position: -8px 0, 0 calc(var(--r) * 0.5 - 7px), 0 0; }
+  .verdict { font-size: 26px; }
+  .stat, .work { font-size: 14.5px; }
+  .hintpill { white-space: normal; width: calc(100vw - 36px); justify-content: space-between; bottom: 2.4vh; font-size: 14.5px; }
+  .caption { bottom: 4vh; font-size: 17px; }
+  .endcard { grid-template-columns: 1fr; gap: 22px; padding: 26px 22px 22px; }
+  .end-index { padding: 18px 0 0; border-left: 0; border-top: 1px solid rgba(27, 42, 39, 0.16); }
+  .endnote { font-size: 15px; }
+  .prompt, .prompt.right { left: 18px; right: auto; top: 76px; font-size: clamp(26px, 8vw, 40px); }
+  .skip { top: 9px; }
+  /* 场景里的小纸签不会跟着镜头缩小，窄屏上字号收一档，免得挤出画面 */
+  .tag3d { font-size: 11.5px; padding: 2px 7px 3px; }
+  .tag3d.big { font-size: 13px; }
+  .tg15, .tg16, .tg17, .tag3d[data-tg='15'] { font-size: 13px; }
+  .tg22 { font-size: 17px; }
+  .traits { width: 150px; }
+  .traits .tag3d[data-tg='15'] { font-size: 12px; }
+  .flag, .sellabel { font-size: 12px; }
+  .slow-hint { font-size: 12.5px; padding: 6px 10px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zzz3d span, .bookhint i { animation: none; }
+}
+
+/* 画不了三维、或画面被收回时的说明卡 */
+.glnote { position: fixed; left: 50%; top: 50%; z-index: 320; transform: translate(-50%, -50%); width: min(88vw, 440px); padding: 26px 28px 24px; border-radius: 4px; background: var(--paper); color: var(--ink); box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.7); font-size: 15.5px; line-height: 1.7; }
+.glnote p { margin: 0 0 10px; text-wrap: pretty; }
+.glnote-h { font-size: 21px; font-weight: 900; line-height: 1.35; }
+.glnote .btn { margin-top: 8px; }
+
+/* 横着拿的手机：宽度够桌面版排版，高度只有三四百像素。纸卡和字等比缩一档，别把场景整个盖住 */
+@media (max-height: 520px) and (orientation: landscape) {
+  .top { height: 48px; }
+  .panel { zoom: 0.68; bottom: 14px; }
+  .panel .next, .panel .btn, .endcard .next, .endcard .btn { zoom: 1.35; }
+  .endcard { zoom: 0.7; max-height: calc(90vh / 0.7); }
+  .qcard, .prompt, .introline, .hintpill, .glnote { zoom: 0.78; }
+  .caption { bottom: 3vh; font-size: 16px; }
+  .tag3d { font-size: 11.5px; padding: 2px 7px 3px; }
+  .tag3d.big, .tg15, .tg16, .tg17, .tag3d[data-tg='15'] { font-size: 13px; }
+  .tg22 { font-size: 17px; }
+  .flag, .sellabel { font-size: 12px; }
+  .slow-hint { font-size: 12.5px; padding: 6px 10px 7px; }
+}
+/* 不太高的屏幕：翻书提示往下放，别压到书的下沿和书签带 */
+@media (max-height: 820px) { .bookhint { bottom: 2.4vh; } }
+
+/* 手机竖屏：场景里的词卡和牌子太小读不清，把要读的字另排一张纸卡放在画面上方（大屏上不显示，三维里的字就够大） */
+.readcard { display: none; }
+@media (max-width: 760px) and (orientation: portrait) {
+  .readcard { position: absolute; left: 18px; right: 18px; top: 62px; z-index: 6; display: block; padding: 12px 16px 13px; border-radius: 3px; background: var(--paper); color: var(--ink); box-shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.6); font-size: 14.5px; line-height: 1.55; animation: rc-in 0.4s var(--out) both; pointer-events: none; }
+  .readcard p { margin: 0; text-wrap: pretty; }
+  .readcard p.red { margin-top: 2px; color: var(--red); font-weight: 900; }
+  .rc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .rc-cols div { display: flex; flex-direction: column; }
+  .rc-cols b { margin-bottom: 2px; font-size: 15.5px; font-weight: 900; }
+  .rc-cols span { font-size: 14px; }
+}
+@keyframes rc-in { from { opacity: 0; translate: 0 -8px; } }

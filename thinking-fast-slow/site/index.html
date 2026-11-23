@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0a1715" />
+    <meta name="description" content="翻开《思考，快与慢》：九个案例，九座小岛。先凭直觉答，再把慢叫起来。An interactive companion to Thinking, Fast and Slow." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="思考，快与慢 | Co-read" />
+    <meta property="og:description" content="九个案例，九座小岛。先凭直觉答，再把慢叫起来。An interactive companion to Thinking, Fast and Slow." />
+    <title>Thinking, Fast and Slow | Co-read</title>
+    <!-- 等待页写在网页本身里：脚本还在下载时就能看到它（慢网下脚本要好几秒），脚本到了由 src/Loader.tsx 接管 -->
+    <style>
+      html, body { margin: 0; background: #0a1715; }
+      #boot { position: fixed; inset: 0; z-index: 300; display: grid; place-content: center; justify-items: center; gap: 18px; background: #0a1715; color: #f6eedb; transition: opacity 0.9s ease 0.1s; font-family: Georgia, 'Songti SC', 'Noto Serif SC', serif; }
+      #boot.done { opacity: 0; pointer-events: none; }
+      #boot p { margin: 0; font-size: 16px; font-style: italic; letter-spacing: 0.02em; color: rgba(246, 238, 219, 0.82); }
+      #boot .bar { width: 148px; height: 1px; background: rgba(246, 238, 219, 0.18); overflow: hidden; }
+      #boot .bar i { display: block; height: 100%; width: 100%; background: #dcae5c; transform-origin: left; transform: scaleX(var(--p, 0.04)); transition: transform 0.5s ease-out; }
+      #boot .slow { margin-top: 6px; font-size: 13px; font-style: normal; opacity: 0; transition: opacity 0.8s; }
+      #boot.waiting .slow { opacity: 0.6; }
+    </style>
+  </head>
+  <body>
+    <div id="boot" class="loader" role="status" aria-live="polite">
+      <p class="t">正在把灯打开</p>
+      <div class="bar"><i></i></div>
+      <p class="slow">第一次打开要多等几秒</p>
+    </div>
+    <noscript>
+      <style>#boot { display: none; }</style>
+      <p style="margin: 40vh auto 0; max-width: 32em; padding: 0 24px; color: #f6eedb; font: 17px/1.7 Georgia, 'Songti SC', serif; text-align: center">这个网站需要打开 JavaScript 才能运行。<br />This site needs JavaScript to run.</p>
+    </noscript>
+    <script>
+      // 语言和 src/i18n.ts 的判断一致；进度条先慢慢走到六成（脚本在下载），脚本到了以后按真实进度走完
+      ;(function () {
+        var b = document.getElementById('boot')
+        var en = false
+        try {
+          var q = new URLSearchParams(location.search).get('lang')
+          var s = localStorage.getItem('lang')
+          var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language]
+          var zh = langs.some(function (l) { return /^zh\b/i.test(l || '') }) || /^(Asia\/(Shanghai|Chongqing|Chungking|Harbin|Urumqi|Kashgar|Hong_Kong|Macau|Macao|Taipei)|PRC|Hongkong|ROC)$/.test(Intl.DateTimeFormat().resolvedOptions().timeZone)
+          en = q ? q === 'en' : s ? s === 'en' : !zh
+        } catch (e) {}
+        if (en) {
+          document.documentElement.lang = 'en'
+          b.querySelector('.t').textContent = 'Turning on the lamp'
+          b.querySelector('.slow').textContent = 'The first visit takes a few seconds'
+        }
+        var t0 = Date.now()
+        window.__bootP = 0.04
+        ;(function tick() {
+          if (window.__bootTaken) return
+          var t = (Date.now() - t0) / 1000
+          window.__bootP = 0.04 + 0.56 * (1 - Math.exp(-t / 3))
+          b.style.setProperty('--p', window.__bootP)
+          if (t > 6) b.classList.add('waiting')
+          setTimeout(tick, 250)
+        })()
+      })()
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "co-read",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "assemble": "node assemble.mjs",
+    "deploy": "node assemble.mjs && cf deploy out"
+  },
+  "devDependencies": {
+    "cf": "^1.0.0-rc.2"
+  }
+}
