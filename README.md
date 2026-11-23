@@ -34,17 +34,19 @@ Each island opens into its own small world where the experiment is acted out rat
 
 ![The nine island worlds: two lines, bat and ball, Linda, the van on repeat, the redwood, the coin, Alan and Ben, the rose gardener, and the fire captain](docs/islands.jpg)
 
+Reading the grid from left to right, top to bottom:
+
 | Island | What you do | What it shows |
 | --- | --- | --- |
 | The man with two lines | Tap the longer line | The Müller-Lyer illusion. You learn the lines are equal and they still look different |
+| A bat and a ball | Pick the coin you think the ball costs | The bat-and-ball question, where Fast jumps in with 10 cents |
+| Linda | Drag Linda into the group she more likely belongs to | The conjunction fallacy |
 | The van on repeat | Listen to a van play a made-up word over and over | The mere exposure effect |
 | Measuring the redwood | Hear a number first, then drag a cloud to guess the tree's height | Anchoring. Half of the visitors hear 1,200 feet and half hear 180 |
-| “Everybody out!” | A fire captain shouts for no reason he can name. Run, or ask why? | Expert intuition, and when it can be trusted |
-| A bat and a ball | Pick the coin you think the ball costs | The bat-and-ball question, where Fast jumps in with 10 cents |
+| The rolling coin | Lose $100 on tails, win $150 on heads. Play or pass? | Loss aversion |
 | Alan and Ben | Pick the person you like better | The halo effect. They are described by the same six words in reverse order |
 | The rose gardener | Decide whether the “So” sign holds up, and push it over if it doesn't | Belief bias. The conclusion is plausible, the logic is not |
-| The rolling coin | Lose $100 on tails, win $150 on heads. Play or pass? | Loss aversion |
-| Linda | Drag Linda into the group she more likely belongs to | The conjunction fallacy |
+| “Everybody out!” | A fire captain shouts for no reason he can name. Run, or ask why? | Expert intuition, and when it can be trusted |
 
 The islands can be visited in any order. After all nine, the book counts how many of the questions with a right answer Fast got right.
 
