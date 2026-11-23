@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const DOCS = resolve(root, '../../docs')
+const DOCS = resolve(root, '../docs')
 const TMP = join(root, '.shots/readme')
 mkdirSync(DOCS, { recursive: true })
 mkdirSync(TMP, { recursive: true })

@@ -1,6 +1,6 @@
 # Thinking, Fast and Slow · site
 
-The interactive companion site for the first Co-read episode. See the [main README](../../README.md) for what it is, how it is built, the URL parameters and the checks.
+The interactive companion site for the first Co-read episode. See the [main README](../README.md) for what it is, how it is built, the URL parameters and the checks.
 
 ```bash
 npm install

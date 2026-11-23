@@ -1,29 +1,21 @@
-# Only the companion site and its deploy setup live in this repository.
+# Only the companion site and its README live in this repository.
 # Everything else in this folder (scripts, storyboards, video work) stays local.
 /*
 !/.gitignore
 !/README.md
 !/docs/
-!/deploy/
-!/thinking-fast-slow/
-/thinking-fast-slow/*
-!/thinking-fast-slow/site/
-
-# deploy
-/deploy/node_modules/
-/deploy/out/
-/deploy/.cloudflare/
+!/site/
 
 # site: build output, dependencies, generated fonts, local notes and scratch
-/thinking-fast-slow/site/node_modules/
-/thinking-fast-slow/site/dist/
-/thinking-fast-slow/site/src/fonts/
-/thinking-fast-slow/site/.shots/
-/thinking-fast-slow/site/preview/
-/thinking-fast-slow/site/_v*/
-/thinking-fast-slow/site/BRIEF_*.md
-/thinking-fast-slow/site/ART_DIRECTION.md
-/thinking-fast-slow/site/tools/deploy.sh
+/site/node_modules/
+/site/dist/
+/site/src/fonts/
+/site/.shots/
+/site/preview/
+/site/_v*/
+/site/BRIEF_*.md
+/site/ART_DIRECTION.md
+/site/tools/deploy.sh
 
 .DS_Store
 *.log

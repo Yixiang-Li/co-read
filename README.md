@@ -1,6 +1,6 @@
 # Co-read · Thinking, Fast and Slow
 
-An interactive companion to the first episode of **Co-read**, my video series about books. The first book is Daniel Kahneman's *Thinking, Fast and Slow*.
+An interactive companion to the first episode of **Co-read**, my video series about books. Each book in the series gets its own site and its own repository. This one is for Daniel Kahneman's *Thinking, Fast and Slow*.
 
 **Live site: [coread.yixiangli.com](https://coread.yixiangli.com/thinking-fast-slow/)** · English and Chinese · desktop and phone
 
@@ -56,17 +56,17 @@ The site downloads no 3D models, no texture images and no HDR environment maps. 
 
 ![The hare and the tortoise, both generated in code: a felted white hare with a red scarf, and a tortoise with a glazed teal shell and brass glasses](docs/characters.jpg)
 
-- **Sculpting with distance fields.** Soft things (the hare, the tortoise, tree crowns, rocks, boats) are built from ellipsoids, capsules and tori blended with a smooth union, then meshed with naive surface nets. Normals come from the field's gradient, and ambient occlusion is read from the same field and baked into vertex colours. See [`sdf.ts`](thinking-fast-slow/site/src/world/sdf.ts) and [`chars.ts`](thinking-fast-slow/site/src/world/chars.ts).
-- **Islands** are height fields grown from a smooth-union outline: a sandy rim at the waterline, a rounded step, then grass on top ([`isles.ts`](thinking-fast-slow/site/src/world/isles.ts)).
-- **Materials are shaders.** One clay material, extended through `onBeforeCompile`, adds object-space grain, wrap lighting and a soft rim, and decides per pixel from the base colour whether a surface should read as wood, aged brass, enamel, lacquer or felt. The tortoise's shell plates are drawn in the fragment shader from a handful of Voronoi seeds ([`kit.tsx`](thinking-fast-slow/site/src/world/kit.tsx)).
-- **The sea is a chart.** Water depth comes from a distance-to-shore field computed analytically from the island outlines. The shader draws four depth contours with a slow pulse travelling along them, a coastline, a graticule and soft waves. A compass rose, rhumb lines and depth soundings are painted onto a canvas in code ([`Sea.tsx`](thinking-fast-slow/site/src/world/Sea.tsx), [`tex.ts`](thinking-fast-slow/site/src/world/tex.ts)).
-- **The book** is a cloth hardback with a foil-stamped title. Its cover, pages and endpapers are painted on canvases, and the pages bend as they turn ([`Book.tsx`](thinking-fast-slow/site/src/world/Book.tsx), [`bookTex.ts`](thinking-fast-slow/site/src/world/bookTex.ts)).
-- **Light** comes from one warm lamp with soft shadows and a faint cool fill. Reflections come from a few light panels assembled in code instead of an HDR file ([`Env.tsx`](thinking-fast-slow/site/src/world/Env.tsx)). Post-processing is bloom, tilt-shift, ACES tone mapping, SMAA, a vignette and light film grain.
+- **Sculpting with distance fields.** Soft things (the hare, the tortoise, tree crowns, rocks, boats) are built from ellipsoids, capsules and tori blended with a smooth union, then meshed with naive surface nets. Normals come from the field's gradient, and ambient occlusion is read from the same field and baked into vertex colours. See [`sdf.ts`](site/src/world/sdf.ts) and [`chars.ts`](site/src/world/chars.ts).
+- **Islands** are height fields grown from a smooth-union outline: a sandy rim at the waterline, a rounded step, then grass on top ([`isles.ts`](site/src/world/isles.ts)).
+- **Materials are shaders.** One clay material, extended through `onBeforeCompile`, adds object-space grain, wrap lighting and a soft rim, and decides per pixel from the base colour whether a surface should read as wood, aged brass, enamel, lacquer or felt. The tortoise's shell plates are drawn in the fragment shader from a handful of Voronoi seeds ([`kit.tsx`](site/src/world/kit.tsx)).
+- **The sea is a chart.** Water depth comes from a distance-to-shore field computed analytically from the island outlines. The shader draws four depth contours with a slow pulse travelling along them, a coastline, a graticule and soft waves. A compass rose, rhumb lines and depth soundings are painted onto a canvas in code ([`Sea.tsx`](site/src/world/Sea.tsx), [`tex.ts`](site/src/world/tex.ts)).
+- **The book** is a cloth hardback with a foil-stamped title. Its cover, pages and endpapers are painted on canvases, and the pages bend as they turn ([`Book.tsx`](site/src/world/Book.tsx), [`bookTex.ts`](site/src/world/bookTex.ts)).
+- **Light** comes from one warm lamp with soft shadows and a faint cool fill. Reflections come from a few light panels assembled in code instead of an HDR file ([`Env.tsx`](site/src/world/Env.tsx)). Post-processing is bloom, tilt-shift, ACES tone mapping, SMAA, a vignette and light film grain.
 
 ## Performance
 
 - The first visit downloads about 1 MB: roughly 600 KB of JavaScript (three.js is most of it) and 400 KB of fonts.
-- The Chinese serif font is cut down at build time to the 550 or so characters the site actually uses. That brought the fonts a Chinese-speaking visitor downloads from about 1.35 MB to about 400 KB. A check after every build fails if any character on the page is missing from the subset ([`fonts.mjs`](thinking-fast-slow/site/tools/fonts.mjs)).
+- The Chinese serif font is cut down at build time to the 550 or so characters the site actually uses. That brought the fonts a Chinese-speaking visitor downloads from about 1.35 MB to about 400 KB. A check after every build fails if any character on the page is missing from the subset ([`fonts.mjs`](site/tools/fonts.mjs)).
 - On an Apple M2 laptop at 2160 × 1350, with the frame cap removed, the chart runs at about 100 fps and the island worlds at about 105 to 110.
 - The loading screen is plain HTML in `index.html`, so it appears as soon as the page does. It stays up while the geometry is generated and the first frames are drawn, and lifts once the book is on the desk.
 - Each island world is its own chunk, fetched in the background after the book opens. When you enter one, the camera waits until the scene has been built before it dives in, so the move itself doesn't stutter.
@@ -81,7 +81,7 @@ The layout adapts to portrait and landscape phones and to tablets. Labels that f
 ## Details
 
 - **Language.** The site picks Chinese if any of the browser's languages is Chinese, or if the system time zone is in mainland China, Hong Kong, Macau or Taiwan. Otherwise it starts in English. There is no IP lookup. A language chosen by hand is remembered.
-- **Line breaks.** Both languages get typographic care before text reaches the page. English keeps short words like *a* and *of* off the ends of lines and joins the last two words of a sentence when they are short, so a paragraph rarely ends on a lone word. Chinese uses the browser's word segmenter so that words are not split across lines. See [`typo.ts`](thinking-fast-slow/site/src/typo.ts).
+- **Line breaks.** Both languages get typographic care before text reaches the page. English keeps short words like *a* and *of* off the ends of lines and joins the last two words of a sentence when they are short, so a paragraph rarely ends on a lone word. Chinese uses the browser's word segmenter so that words are not split across lines. See [`typo.ts`](site/src/typo.ts).
 - **Fallbacks.** If a device cannot draw WebGL, the site says so and suggests a browser. If the browser drops the 3D context (this sometimes happens when a phone switches apps), it offers a reload.
 
 ## Running it locally
@@ -89,7 +89,7 @@ The layout adapts to portrait and landscape phones and to tablets. Labels that f
 Requires Node.js 22 or later.
 
 ```bash
-cd thinking-fast-slow/site
+cd site
 npm install
 npm run dev
 ```
@@ -110,32 +110,26 @@ Some URL parameters make it quicker to work on one part:
 
 ### Checks
 
-The scripts in [`tools/check`](thinking-fast-slow/site/tools/check) drive a real Chrome through puppeteer against a built copy of the site (by default on port 5190; set `BASE` to point them at any URL, and `CHROME` if Chrome is not in the default macOS location).
+The scripts in [`tools/check`](site/tools/check) drive a real Chrome through puppeteer against a built copy of the site (by default on port 5190; set `BASE` to point them at any URL, and `CHROME` if Chrome is not in the default macOS location).
 
 - `final.mjs` plays the whole thing in one or both languages: opens the book, holds the tortoise, enters and leaves all nine islands, finishes Linda and opens the end card. It reports page errors, failed requests and the longest frames, and saves screenshots. `VIEW=390x844 TOUCH=1` runs it as a phone.
 - `views.mjs` photographs key screens at eight screen sizes and flags text that overflows the screen, type below 11 px and tap targets smaller than 32 px.
 - `slow.mjs` loads the site over a throttled network with a throttled CPU and records what is on screen every half second.
 - `weight.mjs` adds up what a first visit downloads.
 
-[`tools/readme-shots.mjs`](thinking-fast-slow/site/tools/readme-shots.mjs) regenerates the images in this README.
+[`tools/readme-shots.mjs`](site/tools/readme-shots.mjs) regenerates the images in this README.
 
 ## Deploying
 
-The site is served as static files from Cloudflare. [`deploy/`](deploy) collects each book's build into its own folder (this one is `/thinking-fast-slow/`), sends the root address to the latest book, adds a 404 page and sets long cache lifetimes for the fingerprinted assets.
+`npm run build` produces plain static files in `site/dist/`. Asset paths are relative, so the folder works from any path on any static host.
 
-```bash
-cd thinking-fast-slow/site && npm run build
-cd ../../deploy && npm install && npm run deploy
-```
-
-Deploying uses Cloudflare's `cf` command-line tool and needs `cf auth login` once.
+The live site is served from Cloudflare. All Co-read books share one domain, and each book lives in its own folder there (this one is `/thinking-fast-slow/`). The deploy setup that collects every book's build sits outside this repository.
 
 ## Layout
 
 ```
-deploy/                     Cloudflare config and the script that assembles each book's build
 docs/                       Images for this README
-thinking-fast-slow/site/
+site/
   index.html                Page shell and the HTML loading screen
   src/
     App.tsx                 Stages (book, introduction, chart, island, end), interface, notebook
